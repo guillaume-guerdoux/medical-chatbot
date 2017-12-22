@@ -12,12 +12,16 @@ class Graph(models.Model):
     def __str__(self):
         return "Graph {0}".format(self.name)
 
+    def get_initial_node(self):
+        return Node.objects.filter(graph=self, initial_node=True)[0]
+
 
 class Node(models.Model):
     """ A node is a chatbot response. It refers to several edges
     """
     text = models.TextField()
     graph = models.ForeignKey(Graph, on_delete=models.CASCADE)
+    initial_node = models.BooleanField(default=False)
 
     def __str__(self):
         return "Node {0} from Graph {1}".format(self.text, self.graph.name)

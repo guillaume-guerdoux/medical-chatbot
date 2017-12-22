@@ -6,7 +6,6 @@ from graph.models import Graph
 from graph.models import Node
 from graph.models import Edge
 
-# Create your tests here.
 
 
 class GraphModelTests(TestCase):
@@ -18,6 +17,19 @@ class GraphModelTests(TestCase):
         graph = Graph.objects.get(name="test_graph")
         self.assertEqual(graph.name, "test_graph")
         self.assertEqual(graph.__str__(), "Graph test_graph")
+
+    def test_graph_get_initial_node(self):
+        test_graph = Graph.objects.create(name="test_graph")
+        test_graph.save()
+        first_left_node = Node.objects.create(
+            text="first_left_node", graph=test_graph, initial_node=True)
+        second_left_node = Node.objects.create(
+            text="second_left_node", graph=test_graph)
+        first_left_node.save()
+        second_left_node.save()
+
+        self.assertEqual(test_graph.get_initial_node(),
+                         first_left_node)
 
 
 class NodeModelTests(TestCase):
