@@ -6,6 +6,7 @@ app_name = 'conversation'
 
 urlpatterns = [
     url(r'^init_conversation/(?P<pk>[0-9]+)/$', views.init_conversation, name="init_conversation"),
+    url(r'^converse/$', views.converse, name="converse"),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

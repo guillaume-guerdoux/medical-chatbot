@@ -12,9 +12,10 @@ class Message(models.Model):
     datetime = models.DateTimeField(auto_now=True)
 
 
-class Chatbot():
+class Chatbot(models.Model):
     """ This chatbot can analyse user answer and ask pertinent
     questions. It uses graph, nodes and edge to go through a 'real'
     conversation. NLTK is used to use NLP.
     """
     graph = models.ForeignKey(Graph, on_delete=models.CASCADE)
+    node = models.ForeignKey(Node, on_delete=models.CASCADE)
