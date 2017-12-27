@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+
 # models
 from conversation.models import Message
 from conversation.models import Chatbot
@@ -18,15 +19,15 @@ class WordsManagerTests(TestCase):
         self.words_manager = WordsManager()
 
     def test_string_to_list(self):
-        self.assertEqual(["Je", "suis", "écarté", "2"],
+        self.assertEqual(["je", "suis", "écarté", "2"],
                          self.words_manager.string_to_list("Je suis écarté 2"))
 
     def test_string_to_list_apostrophe(self):
-        self.assertEqual(["J", "ai", "mal"],
+        self.assertEqual(["j", "ai", "mal"],
                          self.words_manager.string_to_list("J'ai mal"))
 
     def test_string_to_list_second_apostrophe(self):
-        self.assertEqual(["J", "ai", "mal"],
+        self.assertEqual(["j", "ai", "mal"],
                          self.words_manager.string_to_list('J"ai mal'))
 
     def test_lemmatize_french_words(self):
@@ -40,6 +41,12 @@ class WordsManagerTests(TestCase):
     def test_lemmatize_french_words_accent(self):
         stem_word = self.words_manager.lemmatize_french_word("écarté")
         self.assertEqual(stem_word, "écart")
+
+    def test_count_frequency_in_list(self):
+        liste = ['coucou', "test", "coucou", "testdeux"]
+        frequency_dict = self.words_manager.count_frequency_in_list(liste)
+        self.assertEqual(frequency_dict, {'testdeux': 1, 'coucou': 2,
+                                          'test': 1})
 
 
 class MessageModelTests(TestCase):
@@ -115,9 +122,22 @@ class ChatBotGetPertinentMessageTests(TestCase):
         self.chatbot = Chatbot()
 
     def test_return_tokens_dict(self):
-        a = self.chatbot.return_tokens_dict(self.initial_node.get_all_right_edges())
+        self.assertEqual({1: ['j', 'ai', 'mal', 'au', 'ventre'],
+                          2: ['j', 'ai', 'des', 'maux', 'de', 'têtes'],
+                          3: ['j', 'ai', 'très', 'mal', 'au', 'dos']},
+                          self.chatbot.return_tokens_dict(
+                            self.initial_node.get_all_right_edges())
+                        )
+
+    def test_create_inversed_index(self):
+        inversed_index = self.chatbot.create_inversed_index(self.initial_node.get_all_right_edges())
+        self.assertEqual({'de': [(2, 2)], 'tres': [(3, 1)], 'ventr': [(1, 1)],
+                          'au': [(1, 1), (3, 1)], 'mal': [(1, 1), (3, 1)],
+                          'têt': [(2, 1)], 'ai': [(1, 1), (2, 1), (3, 1)],
+                          'dos': [(3, 1)], 'maux': [(2, 1)],
+                          'j': [(1, 1), (2, 1), (3, 1)]},
+                          inversed_index)
 
     def test_get_most_pertinent_message(self):
         a = self.chatbot.get_most_pertinent_message(
             self.test_graph, self.initial_node, Message(text="Bobo au ventre"))
-        print(a)
