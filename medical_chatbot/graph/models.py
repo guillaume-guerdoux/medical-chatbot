@@ -44,5 +44,8 @@ class Edge(models.Model):
         return "Edge {0} between Node {1} and Node {2}".format(
             self.text, self.left_node.text, self.right_node.text)
 
+    def get_text(self):
+        return self.text
+
     def get_right_node(self):
         return self.right_node
