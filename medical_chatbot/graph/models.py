@@ -26,8 +26,9 @@ class Node(models.Model):
     def __str__(self):
         return "Node {0} from Graph {1}".format(self.text, self.graph.name)
 
-    def get_all_right_edges(self):
-        return Edge.objects.filter(left_node=self)
+    def get_all_right_edges_by_id_sorted(self):
+        edge_set = Edge.objects.filter(left_node=self).order_by('pk')
+        return edge_set
 
 
 class Edge(models.Model):

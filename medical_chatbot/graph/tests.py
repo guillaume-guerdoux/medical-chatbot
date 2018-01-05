@@ -82,9 +82,10 @@ class NodeModelTests(TestCase):
                          "Node Quels sont vos symptômes ? from "
                          "Graph test_graph")
 
-    def test_get_all_right_edges(self):
-        self.assertEqual(set(self.center_node.get_all_right_edges()),
-                         {self.first_right_edge, self.second_right_edge})
+    def test_get_all_right_edges_by_id_sorted(self):
+        self.assertEqual(
+            list(self.center_node.get_all_right_edges_by_id_sorted()),
+            [self.first_right_edge, self.second_right_edge])
 
 
 class EdgeModelTests(TestCase):
