@@ -42,12 +42,6 @@ class WordsManagerTests(TestCase):
         stem_word = self.words_manager.lemmatize_french_word("écarté")
         self.assertEqual(stem_word, "écart")
 
-    def test_count_frequency_in_list(self):
-        liste = ['coucou', "test", "coucou", "testdeux"]
-        frequency_dict = self.words_manager.count_frequency_in_list(liste)
-        self.assertEqual(frequency_dict, {'testdeux': 1, 'coucou': 2,
-                                          'test': 1})
-
 
 class MessageModelTests(TestCase):
     """ Test only message model fields and functions
@@ -121,23 +115,36 @@ class ChatBotGetPertinentMessageTests(TestCase):
 
         self.chatbot = Chatbot()
 
-    def test_return_tokens_dict(self):
-        self.assertEqual({1: ['j', 'ai', 'mal', 'au', 'ventre'],
-                          2: ['j', 'ai', 'des', 'maux', 'de', 'têtes'],
-                          3: ['j', 'ai', 'très', 'mal', 'au', 'dos']},
-                          self.chatbot.return_tokens_dict(
-                            self.initial_node.get_all_right_edges())
-                        )
+    def test_return_edges_tokens_dict(self):
+        self.assertEqual({"jaidemauxdetêt": 2,
+                          "jaimalauventr": 1,
+                          "jaitresmalaudos": 3},
+                         self.chatbot.return_edges_tokens(
+                            self.initial_node.get_all_right_edges_by_id_sorted())[1]
+                         )
 
-    def test_create_inversed_index(self):
-        inversed_index = self.chatbot.create_inversed_index(self.initial_node.get_all_right_edges())
-        self.assertEqual({'de': [(2, 2)], 'tres': [(3, 1)], 'ventr': [(1, 1)],
-                          'au': [(1, 1), (3, 1)], 'mal': [(1, 1), (3, 1)],
-                          'têt': [(2, 1)], 'ai': [(1, 1), (2, 1), (3, 1)],
-                          'dos': [(3, 1)], 'maux': [(2, 1)],
-                          'j': [(1, 1), (2, 1), (3, 1)]},
-                          inversed_index)
+    def test_return_edges_tokens_document_list(self):
+        self.assertEqual([['j', 'ai', 'mal', 'au', 'ventr'],
+                          ['j', 'ai', 'de', 'maux', 'de', 'têt'],
+                          ['j', 'ai', 'tres', 'mal', 'au', 'dos']],
+                         self.chatbot.return_edges_tokens(
+                            self.initial_node.get_all_right_edges_by_id_sorted())[0]
+                         )
 
-    def test_get_most_pertinent_message(self):
-        a = self.chatbot.get_most_pertinent_message(
-            self.test_graph, self.initial_node, Message(text="Bobo au ventre"))
+    def test_get_most_pertinent_edge_1(self):
+        most_pertinent_edge_id = self.chatbot.get_most_pertinent_edge(
+            self.test_graph, self.initial_node,
+            Message(text="Ca me fait tres mal à la tête"))
+        self.assertEqual(most_pertinent_edge_id, 2)
+
+    def test_get_most_pertinent_edge_0(self):
+        most_pertinent_edge_id = self.chatbot.get_most_pertinent_edge(
+            self.test_graph, self.initial_node,
+            Message(text="J'ai mal au ventre quand je mange"))
+        self.assertEqual(most_pertinent_edge_id, 1)
+
+    def test_get_most_pertinent_edge_2(self):
+        most_pertinent_edge_id = self.chatbot.get_most_pertinent_edge(
+            self.test_graph, self.initial_node,
+            Message(text="Une douleur dans le dos"))
+        self.assertEqual(most_pertinent_edge_id, 3)

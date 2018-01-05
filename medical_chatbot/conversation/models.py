@@ -2,6 +2,10 @@ from django.db import models
 import re
 from collections import defaultdict
 
+import numpy as np
+from math import log
+import gensim
+
 from nltk.stem.snowball import FrenchStemmer
 
 # import models
@@ -31,11 +35,21 @@ class WordsManager():
         french_stemmer = FrenchStemmer()
         return french_stemmer.stem(french_word)
 
-    def count_frequency_in_list(self, liste):
-        w = dict()
-        for element in liste:
-            w[element] = liste.count(element)
-        return w
+    def normalize_string(self, string):
+        """ Transform a string to a normalize list for nlp
+        Input : 'coucou les gars'
+        Output ['coucou', 'le', 'gar']
+        """
+        token_list = []
+        for token in self.string_to_list(string):
+            if self.filter_common_words(token):
+                lemmatized_element = \
+                    self.lemmatize_french_word(token)
+                token_list.append(lemmatized_element)
+        return token_list
+
+    def list_to_string(self, liste):
+        return ''.join(map(str, liste))
 
 
 class Message(models.Model):
@@ -50,35 +64,44 @@ class Chatbot(models.Model):
     """
     words_manager = WordsManager()
 
-    def return_tokens_dict(self, edges):
-        edges_tokens_dict = dict()
-        for edge in edges:
-            edges_tokens_dict[edge.pk] = self.words_manager.string_to_list(
-                edge.get_text()
-            )
-        return edges_tokens_dict
-
-    def create_inversed_index(self, edges):
-        """ From a queryset of edges (with text), we create an inversed
-        index in real time.
-        Input : Edge queryset
-        Output : defaultdict : "word1" : [[edge_id, frequency], [edge__id_2, frequency]], "word2" ...
+    def return_edges_tokens(self, edges):
+        """ Create a dictionary with edge's id as key and tokenize sentence
+        as value
+        input : Edges
+        output {1 : ['Je', 'mange'], 2 ...}
         """
-        frequency_dict = dict()
-        inversed_index = defaultdict(list)
-        for key, value in self.return_tokens_dict(edges).items():
-            new_list = []
-            for element in value:
-                if self.words_manager.filter_common_words(element):
-                    lemmatized_element = \
-                        self.words_manager.lemmatize_french_word(element)
-                    new_list.append(lemmatized_element)
-            frequency_dict = self.words_manager.count_frequency_in_list(
-                new_list
-            )
-            for element in list(set(new_list)):
-                inversed_index[element].append((key, frequency_dict[element]))
-        return inversed_index
+        edges_tokens_dict = dict()
+        document_list = []
+        for edge in edges:
+            token_list = self.words_manager.normalize_string(edge.get_text())
+            edges_tokens_dict[self.words_manager.list_to_string(token_list)] = edge.pk
+            document_list.append(token_list)
+        return document_list, edges_tokens_dict
 
-    def get_most_pertinent_message(self, graph, node, message):
-        return 1
+    def get_most_pertinent_edge(self, graph, node, message):
+        edges = node.get_all_right_edges_by_id_sorted()
+        document_list, edges_tokens_dict = self.return_edges_tokens(edges)
+
+        # Create corpus with all text of all edges / Use model TFIDF then LSI
+        dictionary = gensim.corpora.Dictionary(document_list)
+        corpus = [dictionary.doc2bow(document) for document in document_list]
+
+        tfidf = gensim.models.TfidfModel(corpus)
+        corpus_tfidf = tfidf[corpus]
+
+        lsi = gensim.models.LsiModel(corpus_tfidf, id2word=dictionary,
+                                     num_topics=100)
+        corpus_lsi = lsi[corpus_tfidf]
+
+        # Treat query
+        query = message.text
+        normalized_query = self.words_manager.normalize_string(query)
+        vec_bow = dictionary.doc2bow(normalized_query)
+        vec_lsi = lsi[vec_bow] # convert the query to LSI space
+
+        index = gensim.similarities.MatrixSimilarity(lsi[corpus])
+        sims = index[vec_lsi] # perform a similarity query against the corpus
+        sorted_sims = sorted(enumerate(sims), key=lambda item: -item[1])
+        most_pertinent_document = document_list[sorted_sims[0][0]]
+        edge_id = edges_tokens_dict[self.words_manager.list_to_string(most_pertinent_document)]
+        return edge_id
