@@ -97,10 +97,10 @@ class Chatbot(models.Model):
         query = message.text
         normalized_query = self.words_manager.normalize_string(query)
         vec_bow = dictionary.doc2bow(normalized_query)
-        vec_lsi = lsi[vec_bow] # convert the query to LSI space
+        vec_lsi = lsi[vec_bow]
 
         index = gensim.similarities.MatrixSimilarity(lsi[corpus])
-        sims = index[vec_lsi] # perform a similarity query against the corpus
+        sims = index[vec_lsi]
         sorted_sims = sorted(enumerate(sims), key=lambda item: -item[1])
         most_pertinent_document = document_list[sorted_sims[0][0]]
         edge_id = edges_tokens_dict[self.words_manager.list_to_string(most_pertinent_document)]
