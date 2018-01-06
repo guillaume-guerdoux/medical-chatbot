@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>{% block title %}Medical Chatbot{% endblock %}</title>
+		{% block stylesheets %}
+			<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+			<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+			<link rel="stylesheet" type="text/css" href="{% static 'css/base_style.css' %}">
+		{% endblock %}
+	</head>
+
+	<body>
+		<nav class="navbar navbar-inverse">
+		  <div class="container-fluid">
+		    <div class="navbar-center">
+		      <a class="navbar-brand" style="text-align:center;"href="#">Chatbot médical</a>
+		    </div>
+		  </div>
+		</nav>
+    	<!-- Content -->
+		{% block body %}
+		{% endblock %}
+
+		<!-- Footer
+    <footer>
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-xs-4 col-xs-offset-1">
+						<h2> Découvrir Médical Chatbot</h2>
+						<ul class="text-center footer_list">
+							<li>
+								<a href="#">Comment ça marche</a>
+							</li>
+							<li>
+								<a href="#">Confiance et sécurité</a>
+							</li>
+							<li>
+								<a href="#">Conseil et présentation</a>
+							</li>
+							<li>
+								<a href="#">Nous contacter</a>
+							</li>
+						</ul>
+					</div>
+					<div class="col-xs-4 col-xs-offset-2" >
+						<h2> A propos</h2>
+						<ul class="text-center footer_list">
+							<li>
+								<a href="#">Qui sommes-nous ?</a>
+							</li>
+							<li>
+								<a href="#">Nos partenaires</a>
+							</li>
+							<li>
+								<a href="#">Charte de bonne conduite</a>
+							</li>
+							<li>
+								<a href="#">Conditions générales et politiques de confidentialité</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+					<hr class="footer_hr">
+
+					<div class="center">
+						<h3> Rejoignez-nous sur </h3>
+						<span class="fa fa-facebook-square footer_icon"></span>
+						<span class="fa fa-linkedin-square footer_icon"></span>
+						<span class="fa fa-twitter-square footer_icon"></span>
+					</div>
+					<p id = "copyright">© 2018 Mayer Prezioso & Associés</p>
+			</div>
+		</footer> -->
+
+
+		{% block javascripts %}
+  			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  			<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		{% endblock %}
+		{% block javascript_child %}
+		{% endblock %}
+	</body>

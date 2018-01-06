@@ -1,0 +1,56 @@
+body {
+    font-family:Arial;
+    font-weight: 500;
+}
+
+/* ------------- Footer Style --------------- */
+footer{
+	background-color : #6E6E6E;
+	color : white;
+	position: relative;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	text-align: center;
+}
+
+footer h2{
+	font-size: calc(8px + 1vw);
+	font-weight: bold;
+	text-align:center;
+}
+
+footer h3{
+	font-size: calc(8px + 0.8vw);
+}
+
+
+.footer_list{
+    list-style-type:none;
+    margin: 0;
+    padding: 0;
+}
+
+.footer_list li{
+    margin-bottom: 5px;
+}
+
+.footer_list a{
+    font-size: calc(7px + 0.5vw);
+    color: white;
+    text-decoration: none;
+}
+
+.footer_list a:hover {
+    color: #D8D8D8;
+    text-decoration: none;
+}
+
+#copyright{
+  text-align: right;
+}
+
+.footer_icon{
+    font-size: 200%;
+    margin-right: 15px;
+}
