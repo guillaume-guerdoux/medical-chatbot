@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+
 # models
 from conversation.models import Message
 from conversation.models import Chatbot
@@ -14,7 +15,7 @@ from conversation.serializers import MessageSerializer
 
 
 @api_view(['GET'])
-def init_conversation(request, pk, format=None):
+def init_conversation(request, format=None):
     """
     Initialize conversation with chatbot :
         - Choose tree
@@ -22,11 +23,12 @@ def init_conversation(request, pk, format=None):
         - Send a first message
     """
     if request.method == 'GET':
+        # id_graph = request.POST["pk"]
         if request.user.is_authenticated:
             pass
         else:
             try:
-                graph = Graph.objects.get(pk=pk)
+                graph = Graph.objects.all()[0]
             except Graph.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             initial_node = graph.get_initial_node()
@@ -51,16 +53,14 @@ def converse(request, format=None):
         try:
             graph = Graph.objects.get(pk=id_graph)
         except Graph.DoesNotExist:
-            print("graph")
             return Response(status=status.HTTP_404_NOT_FOUND)
         try:
             node = Node.objects.get(pk=id_node)
-            print("node")
         except Node.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         user_message_serializer = MessageSerializer(data=request.data)
         print(user_message_serializer)
-        chatbot = Chatbot(graph=graph, node=node)
+        chatbot = Chatbot()
         response_message = Message.objects.create(
             text="TEST"
         )

@@ -5,7 +5,7 @@ from conversation import views
 app_name = 'conversation'
 
 urlpatterns = [
-    url(r'^init_conversation/(?P<pk>[0-9]+)/$', views.init_conversation, name="init_conversation"),
+    url(r'^init_conversation/$', views.init_conversation, name="init_conversation"),
     url(r'^converse/$', views.converse, name="converse"),
 ]
 
