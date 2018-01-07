@@ -76,10 +76,10 @@ class InitConversationTests(TestCase):
         self.initial_node.save()
 
     def test_init_conversation(self):
-        response = self.client.get(reverse('conversation:init_conversation',
-                                           kwargs={'pk': self.test_graph.pk}))
+        response = self.client.get(reverse('conversation:init_conversation'))
         self.assertEqual(response.data['text'],
-                         "Bonjour, que puis-je faire pour vous ?")
+                         "Bonjour, je m'appelle Ryan, je suis là pour vous aider ! "
+                         "Décrivez-moi vos symptômes :)")
         session = self.client.session
         self.assertEqual(session.get('active_graph'), 1)
         self.assertEqual(session.get('active_node'), 1)
@@ -148,3 +148,40 @@ class ChatBotGetPertinentMessageTests(TestCase):
             self.test_graph, self.initial_node,
             Message(text="Une douleur dans le dos"))
         self.assertEqual(most_pertinent_edge_id, 3)
+
+
+class ConverseTests(TestCase):
+    def setUp(self):
+        self.test_graph = Graph.objects.create(name="test_graph")
+        self.test_graph.save()
+        self.initial_node = Node.objects.create(
+            text="initial_node", graph=self.test_graph, initial_node=True)
+        self.initial_node.save()
+
+        self.first_right_node = Node.objects.create(
+            text="first_right_node", graph=self.test_graph)
+        self.second_right_node = Node.objects.create(
+            text="second_right_node", graph=self.test_graph)
+        self.third_right_node = Node.objects.create(
+            text="third_right_node", graph=self.test_graph)
+        self.first_right_node.save()
+        self.second_right_node.save()
+        self.third_right_node.save()
+
+        self.ventre_edge = Edge.objects.create(
+            text='J"ai mal au ventre', left_node=self.initial_node,
+            right_node=self.first_right_node)
+        self.tete_edge = Edge.objects.create(
+            text="J'ai des maux de têtes", left_node=self.initial_node,
+            right_node=self.second_right_node)
+        self.dos_edge = Edge.objects.create(
+            text="J'ai très mal au dos", left_node=self.initial_node,
+            right_node=self.third_right_node)
+
+    def test_converse_ventre(self):
+        init_response = self.client.get(reverse('conversation:init_conversation'))
+        response = self.client.post(
+            reverse('conversation:converse'),
+            {'text': 'Aie mon ventre'})
+        self.assertEqual(response.data['text'],
+                         "first_right_node")

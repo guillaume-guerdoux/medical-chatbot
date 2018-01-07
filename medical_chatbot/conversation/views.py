@@ -9,6 +9,7 @@ from conversation.models import Message
 from conversation.models import Chatbot
 from graph.models import Graph
 from graph.models import Node
+from graph.models import Edge
 
 # serializer
 from conversation.serializers import MessageSerializer
@@ -35,7 +36,8 @@ def init_conversation(request, format=None):
             request.session['active_graph'] = graph.id
             request.session['active_node'] = initial_node.id
             welcome_message = Message.objects.create(
-                text="Bonjour, que puis-je faire pour vous ?"
+                text="Bonjour, je m'appelle Ryan, je suis là pour vous aider ! "
+                     "Décrivez-moi vos symptômes :)"
             )
             serializer = MessageSerializer(welcome_message)
             return Response(serializer.data)
@@ -59,10 +61,19 @@ def converse(request, format=None):
         except Node.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         user_message_serializer = MessageSerializer(data=request.data)
-        print(user_message_serializer)
+        if user_message_serializer.is_valid():
+            user_message = Message.objects.create(
+                text=user_message_serializer.data['text']
+            )
         chatbot = Chatbot()
-        response_message = Message.objects.create(
-            text="TEST"
-        )
-        serializer = MessageSerializer(response_message)
-        return Response(serializer.data)
+        edge_id = chatbot.get_most_pertinent_edge(graph, node, user_message)
+        try:
+            edge = Edge.objects.get(pk=edge_id)
+        except Edge.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        next_node = edge.get_right_node()
+        request.session['active_node'] = next_node.id
+
+        chatbot_message = Message.objects.create(text=next_node.text)
+        chatbot_message_serializer = MessageSerializer(chatbot_message)
+        return Response(chatbot_message_serializer.data)

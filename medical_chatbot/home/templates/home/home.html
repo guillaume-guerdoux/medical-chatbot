@@ -72,6 +72,7 @@
 			$.ajax({
 	            type: "POST",
 	            url:  converseView,
+				data: {'text': text},
 	            success: function(json) {
 					chatbotMessage = '<li style="width:100%;">' +
 									'<div class="msj-rta macro">' +
