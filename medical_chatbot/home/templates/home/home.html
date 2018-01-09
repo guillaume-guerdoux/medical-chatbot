@@ -2,17 +2,20 @@
 {% load staticfiles %}
 {% block home_content %}
 	<link rel="stylesheet" href="{% static 'home/css/conversation_style.css' %}">
-	<div class="row">
-	<div class="col-sm-3 col-sm-offset-4 frame">
-		<ul></ul>
-		<div>
-			<div class="msj-rta macro" style="margin:auto">
-				<div class="text text-r" style="background:whitesmoke !important">
-					<input class="mytext" placeholder="Type a message"/>
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-8 col-xs-offset-2">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<ul class="chat">
+						</ul>
+					</div>
+					<div class="panel-footer">
+						<input id="text-input" type="text" class="form-control input-lg" placeholder="Entrez votre message" />
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 	</div>
 {% endblock %}
 {% block javascript_child %}
@@ -43,15 +46,22 @@
 	            type: "GET",
 	            url:  initConversation,
 	            success: function(json) {
-					chatbotMessage = '<li style="width:100%;">' +
-									'<div class="msj-rta macro">' +
-										'<div class="text text-r">' +
-											'<p>'+json['text']+'</p>' +
-											'<p><small>'+date+'</small></p>' +
-										'</div>' +
-									'<div class="avatar" style="padding:0px 0px 0px 10px !important"><img class="img-circle" style="width:100%;" src="'+you.avatar+'" /></div>' +
-							  '</li>';
-					$("ul").append(chatbotMessage);
+					chatbotMessage =   '<li class="left clearfix">' +
+											'<div class="avatar">' +
+												'<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToWk3ya6-gc9aWP7RUXg84RnyNa7jKX2hd07uj6set6Bx9C22g" alt="User Avatar" class="img-circle" style="width:100%;"/>' +
+											'</div>' +
+											'</span>' +
+											'<div class="chat-body clearfix">' +
+												'<div class="header">' +
+													'<strong class="primary-font">Ryan</strong> <small class="pull-right text-muted">' +
+													'<span class="glyphicon glyphicon-time"></span>' + date + '</small>' +
+												'</div>' +
+												'<p>' +
+													json['text'] +
+												'</p>' +
+											'</div>' +
+										'</li>'
+					$(".chat").append(chatbotMessage);
 	            }
 	        });
 		}
@@ -60,33 +70,44 @@
 			var date = formatAMPM(new Date());
 			var chatbotMessage = ""
 			var humanMessage = ""
-			humanMessage = '<li style="width:100%">' +
-								'<div class="msj macro">' +
-									'<div class="text text-l">' +
-										'<p>'+ text +'</p>' +
-										'<p><small>'+date+'</small></p>' +
+			humanMessage = 	'<li class="right clearfix">' +
+								'<div class="chat-body clearfix">' +
+									'<div class="header">' +
+										'<small class="text-muted" style="text-align:left;"><span class="glyphicon glyphicon-time"></span>' + date + '</small>' +
+										'<strong class="pull-right primary-font">Vous</strong>' +
 									'</div>' +
+									'<p class="pull-right" style="text-align:right;">' +
+										text +
+									'</p>' +
 								'</div>' +
-							'</li>';
-			$("ul").append(humanMessage);
+							'</li>'
+
+			$(".chat").append(humanMessage);
 			$.ajax({
 	            type: "POST",
 	            url:  converseView,
 				data: {'text': text},
 	            success: function(json) {
-					chatbotMessage = '<li style="width:100%;">' +
-									'<div class="msj-rta macro">' +
-										'<div class="text text-r">' +
-											'<p>'+json['text']+'</p>' +
-											'<p><small>'+date+'</small></p>' +
+					chatbotMessage ='<li class="left clearfix">' +
+										'<div class="avatar">' +
+											'<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToWk3ya6-gc9aWP7RUXg84RnyNa7jKX2hd07uj6set6Bx9C22g" alt="User Avatar" class="img-circle" style="width:100%;"/>' +
 										'</div>' +
-									'<div class="avatar" style="padding:0px 0px 0px 10px !important"><img class="img-circle" style="width:100%;" src="'+you.avatar+'" /></div>' +
-							  '</li>';
-					$("ul").append(chatbotMessage);
+										'</span>' +
+										'<div class="chat-body clearfix">' +
+											'<div class="header">' +
+												'<strong class="primary-font">Ryan</strong> <small class="pull-right text-muted">' +
+												'<span class="glyphicon glyphicon-time"></span>' + date + '</small>' +
+											'</div>' +
+											'<p>' +
+												json['text'] +
+											'</p>' +
+										'</div>' +
+									'</li>'
+					$(".chat").append(chatbotMessage);
 	            }
 	        });
 		}
-		$(".mytext").on("keyup", function(e){
+		$("#text-input").on("keyup", function(e){
 			if (e.which == 13){
 				var text = $(this).val();
 				if (text !== ""){

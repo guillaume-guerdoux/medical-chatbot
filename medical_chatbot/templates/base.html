@@ -16,67 +16,12 @@
 	<body>
 		<nav class="navbar navbar-inverse">
 		  <div class="container-fluid">
-		    <div class="navbar-center">
-		      <a class="navbar-brand" style="text-align:center;"href="#">Chatbot médical</a>
-		    </div>
+		      <a class="navbar-brand text-center center-block" style="float: none;"href="{% url 'home:root' %}">Ryan : Votre chatbot médical</a>
 		  </div>
 		</nav>
     	<!-- Content -->
 		{% block body %}
 		{% endblock %}
-
-		<!-- Footer
-    <footer>
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-xs-4 col-xs-offset-1">
-						<h2> Découvrir Médical Chatbot</h2>
-						<ul class="text-center footer_list">
-							<li>
-								<a href="#">Comment ça marche</a>
-							</li>
-							<li>
-								<a href="#">Confiance et sécurité</a>
-							</li>
-							<li>
-								<a href="#">Conseil et présentation</a>
-							</li>
-							<li>
-								<a href="#">Nous contacter</a>
-							</li>
-						</ul>
-					</div>
-					<div class="col-xs-4 col-xs-offset-2" >
-						<h2> A propos</h2>
-						<ul class="text-center footer_list">
-							<li>
-								<a href="#">Qui sommes-nous ?</a>
-							</li>
-							<li>
-								<a href="#">Nos partenaires</a>
-							</li>
-							<li>
-								<a href="#">Charte de bonne conduite</a>
-							</li>
-							<li>
-								<a href="#">Conditions générales et politiques de confidentialité</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-
-					<hr class="footer_hr">
-
-					<div class="center">
-						<h3> Rejoignez-nous sur </h3>
-						<span class="fa fa-facebook-square footer_icon"></span>
-						<span class="fa fa-linkedin-square footer_icon"></span>
-						<span class="fa fa-twitter-square footer_icon"></span>
-					</div>
-					<p id = "copyright">© 2018 Mayer Prezioso & Associés</p>
-			</div>
-		</footer> -->
-
 
 		{% block javascripts %}
   			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
