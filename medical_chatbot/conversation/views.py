@@ -73,7 +73,8 @@ def converse(request, format=None):
             return Response(status=status.HTTP_404_NOT_FOUND)
         next_node = edge.get_right_node()
         request.session['active_node'] = next_node.id
-
         chatbot_message = Message.objects.create(text=next_node.text)
+        if next_node.final_node is True:
+            chatbot_message.final_message = True
         chatbot_message_serializer = MessageSerializer(chatbot_message)
         return Response(chatbot_message_serializer.data)

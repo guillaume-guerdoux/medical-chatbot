@@ -23,7 +23,7 @@ class WordsManager():
     def string_to_list(self, string):
         """ Transform a string in a words list with accent and number.
         """
-        return string.replace("'", " ").replace('"', " ").lower().split()
+        return string.replace("'", " ").replace('"', " ").replace(',',' ').replace('.',' ').lower().split()
 
     def filter_common_words(self, word):
         if word not in stop_words:
@@ -55,6 +55,7 @@ class WordsManager():
 class Message(models.Model):
     text = models.TextField()
     datetime = models.DateTimeField(auto_now=True)
+    final_message = models.BooleanField(default=False)
 
 
 class Chatbot(models.Model):

@@ -6,4 +6,4 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ('text', 'datetime')
+        fields = ('text', 'datetime', 'final_message')

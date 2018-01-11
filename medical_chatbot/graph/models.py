@@ -22,6 +22,7 @@ class Node(models.Model):
     text = models.TextField()
     graph = models.ForeignKey(Graph, on_delete=models.CASCADE)
     initial_node = models.BooleanField(default=False)
+    final_node = models.BooleanField(default=False)
 
     def __str__(self):
         return "Node {0} from Graph {1}".format(self.text, self.graph.name)

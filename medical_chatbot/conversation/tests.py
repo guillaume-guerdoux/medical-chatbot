@@ -30,6 +30,14 @@ class WordsManagerTests(TestCase):
         self.assertEqual(["j", "ai", "mal"],
                          self.words_manager.string_to_list('J"ai mal'))
 
+    def test_string_to_list_comma(self):
+        self.assertEqual(["j", "ai", "mal"],
+                         self.words_manager.string_to_list('J,ai mal'))
+
+    def test_string_to_list_dot(self):
+        self.assertEqual(["j", "ai", "mal"],
+                         self.words_manager.string_to_list('J.ai mal'))
+
     def test_lemmatize_french_words(self):
         stem_word = self.words_manager.lemmatize_french_word("voudrais")
         self.assertEqual(stem_word, "voudr")
@@ -163,7 +171,7 @@ class ConverseTests(TestCase):
         self.second_right_node = Node.objects.create(
             text="second_right_node", graph=self.test_graph)
         self.third_right_node = Node.objects.create(
-            text="third_right_node", graph=self.test_graph)
+            text="third_right_node", graph=self.test_graph, final_node=True)
         self.first_right_node.save()
         self.second_right_node.save()
         self.third_right_node.save()
@@ -183,5 +191,13 @@ class ConverseTests(TestCase):
         response = self.client.post(
             reverse('conversation:converse'),
             {'text': 'Aie mon ventre'})
-        self.assertEqual(response.data['text'],
-                         "first_right_node")
+        self.assertEqual(response.data['text'], "first_right_node")
+        self.assertEqual(response.data['final_message'], False)
+
+    def test_converse_ventre_final(self):
+        init_response = self.client.get(reverse('conversation:init_conversation'))
+        response = self.client.post(
+            reverse('conversation:converse'),
+            {'text': 'Aie mon dos'})
+        self.assertEqual(response.data['text'], "third_right_node")
+        self.assertEqual(response.data['final_message'], True)
